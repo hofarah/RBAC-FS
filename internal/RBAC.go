@@ -2,8 +2,10 @@ package internal
 
 import (
 	"bufio"
+	"context"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 type RBACTerminal struct {
@@ -15,6 +17,16 @@ func (r *RBACTerminal) getName() string {
 }
 func (r *RBACTerminal) setUser(u *user) {
 	r.user = u
+}
+func (r *RBACTerminal) initPath() {
+	p, _ := exec.Command("pwd").Output()
+	r.currentPath = format(string(p), nil)
+}
+func (r *RBACTerminal) setPath(path string) {
+	r.currentPath = path
+}
+func (r *RBACTerminal) addPath(p string) {
+	r.currentPath = filepath.Join(r.currentPath, p)
 }
 func (r *RBACTerminal) getVersion() string {
 	return r.version
@@ -75,6 +87,30 @@ func (r *RBACTerminal) HandleAddUserCMD(args ...string) Printable {
 	}
 	return NewPrintable("new user successfully created")
 }
+func (r *RBACTerminal) HandleSetRoleForUserCMD(args ...string) Printable {
+	if !r.user.isAdmin() {
+		return NewError("you are not admin!!")
+	}
+	var (
+		rol      string
+		username string
+	)
+	username = args[0]
+	rol = args[1]
+	rl := GetRole(rol)
+	if rl == nil {
+		return NewError("role not found")
+	}
+	us := GetUsername(username)
+	if us == nil {
+		return NewError("user not found")
+	}
+	_, err := conn.ExecContext(context.Background(), "insert into userRoles (roleID,userID) values (?,?)", rl.id, us.id)
+	if err != nil {
+		return NewError("an error accuerd")
+	}
+	return NewPrintable("new user role successfully added")
+}
 
 func (r *RBACTerminal) HandleAddRoleCMD(args ...string) Printable {
 	if !r.user.isAdmin() {
@@ -89,6 +125,26 @@ func (r *RBACTerminal) HandleAddRoleCMD(args ...string) Printable {
 		return NewPrintable("an error accrued", OPrint{color: colorRed})
 	}
 	return NewPrintable("new role successfully created")
+}
+func (r *RBACTerminal) HandleSetRoleForFileCMD(args ...string) Printable {
+	if !r.user.isAdmin() {
+		return NewError("you are not admin!!")
+	}
+	var (
+		filePath string
+		rol      string
+	)
+	filePath = filepath.Join(r.currentPath, args[0])
+	rol = args[1]
+	rr := GetRole(rol)
+	if rr == nil {
+		return NewError("role not found")
+	}
+	err := NewRoleAccess(rr.id, filePath)
+	if err != nil {
+		return NewPrintable("an error accrued", OPrint{color: colorRed})
+	}
+	return NewPrintable("new role for file successfully created")
 }
 func (r *RBACTerminal) getTerminal() Terminal {
 	return r

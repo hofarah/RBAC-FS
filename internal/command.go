@@ -11,19 +11,28 @@ type Command struct {
 }
 
 const (
-	ListCMD            = "list"
-	OpenCMD            = "open"
-	BackCMD            = "back"
-	ReadCMD            = "read"
-	HelpCMD            = "help"
-	AddUserCMD         = "adduser"
+	ListCMD = "list"
+	OpenCMD = "open"
+	BackCMD = "back"
+	ReadCMD = "read"
+	HelpCMD = "help"
+
+	AddUserCMD         = "add-user"
 	AddUserUsageString = "wrong COMMAND. usage: " + AddUserCMD + " <user name> + Optional[Role]"
+
+	AddUserRoleCMD         = "add-user-role"
+	AddUserRoleUsageString = "wrong COMMAND. usage: " + AddUserRoleCMD + " <user name>  <role name>"
+
 	AddRoleCMD         = "add-role"
 	AddRoleUsageString = "wrong COMMAND. usage: " + AddRoleCMD + " <role name>"
-	OpenUsageString    = "wrong COMMAND. usage: " + OpenCMD + " <folder name>"
-	ReadUsageString    = "wrong COMMAND. usage: " + ReadCMD + " <file name>"
-	HelpString         = "COMMANDS\n" + ListCMD + " - list of current directory\n" + BackCMD + " - go to parent directory\n" + OpenCMD + " - open folder\n" + ReadCMD + " - open file"
-	colorReset         = "\033[0m"
+
+	SetRoleForFileCMD            = "set-file-role"
+	SetRoleForFileCMDUsageString = "wrong COMMAND. usage: " + SetRoleForFileCMD + " <file name> <role-name>"
+
+	OpenUsageString = "wrong COMMAND. usage: " + OpenCMD + " <folder name>"
+	ReadUsageString = "wrong COMMAND. usage: " + ReadCMD + " <file name>"
+	HelpString      = "COMMANDS\n" + ListCMD + " - list of current directory\n" + BackCMD + " - go to parent directory\n" + OpenCMD + " - open folder\n" + ReadCMD + " - open file"
+	colorReset      = "\033[0m"
 
 	colorRed    = "\033[31m"
 	colorGreen  = "\033[32m"
@@ -34,7 +43,7 @@ const (
 	colorWhite  = "\033[37m"
 )
 
-var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, AddRoleCMD, HelpCMD}
+var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, AddRoleCMD, AddUserRoleCMD, SetRoleForFileCMD, HelpCMD}
 
 func (c *Command) Validate() bool {
 	return utils.Contain(validCommands, c.c)

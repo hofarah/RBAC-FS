@@ -79,3 +79,11 @@ func NewUser(username, password, role string) error {
 
 	return nil
 }
+func GetUsername(u string) *user {
+	var id int
+	err := conn.QueryRowContext(context.Background(), "select id from users where username=?", u).Scan(&id)
+	if err != nil {
+		return nil
+	}
+	return &user{id: id, username: u}
+}

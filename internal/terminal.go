@@ -14,15 +14,21 @@ type Terminal interface {
 	HandleBackCMD() Printable
 	HandleAddUserCMD(args ...string) Printable
 	HandleAddRoleCMD(args ...string) Printable
+	HandleSetRoleForFileCMD(args ...string) Printable
+	HandleSetRoleForUserCMD(args ...string) Printable
 	getName() string
 	getVersion() string
 	setUser(*user)
+	initPath()
+	addPath(path string)
+	setPath(path string)
 }
 
 type baseTerminal struct {
-	name    string
-	version string
-	user    *user
+	name        string
+	version     string
+	user        *user
+	currentPath string
 }
 
 func HandleCmd(terminal Terminal, cmd Command) {
@@ -73,6 +79,20 @@ func HandleCmd(terminal Terminal, cmd Command) {
 		}
 		TPrint(terminal.HandleAddRoleCMD(cmd.args...))
 		return
+	case SetRoleForFileCMD:
+		if len(cmd.args) <= 1 {
+			TPrint(NewHelp(SetRoleForFileCMDUsageString))
+			return
+		}
+		TPrint(terminal.HandleSetRoleForUserCMD(cmd.args...))
+		return
+	case AddUserRoleCMD:
+		if len(cmd.args) <= 1 {
+			TPrint(NewHelp(AddUserRoleUsageString))
+			return
+		}
+		TPrint(terminal.HandleSetRoleForUserCMD(cmd.args...))
+		return
 	}
 }
 func Listen(terminal Terminal) {
@@ -106,6 +126,7 @@ func InitialChecks(terminal Terminal) *user {
 					u.UpdateUserPass(newPassword)
 				}
 				terminal.setUser(u)
+				terminal.initPath()
 				return u
 			}
 			TPrint(NewError("wrong input please try again"))
