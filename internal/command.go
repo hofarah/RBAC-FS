@@ -18,6 +18,8 @@ const (
 	HelpCMD            = "help"
 	AddUserCMD         = "adduser"
 	AddUserUsageString = "wrong COMMAND. usage: " + AddUserCMD + " <user name> + Optional[Role]"
+	AddRoleCMD         = "add-role"
+	AddRoleUsageString = "wrong COMMAND. usage: " + AddRoleCMD + " <role name>"
 	OpenUsageString    = "wrong COMMAND. usage: " + OpenCMD + " <folder name>"
 	ReadUsageString    = "wrong COMMAND. usage: " + ReadCMD + " <file name>"
 	HelpString         = "COMMANDS\n" + ListCMD + " - list of current directory\n" + BackCMD + " - go to parent directory\n" + OpenCMD + " - open folder\n" + ReadCMD + " - open file"
@@ -32,7 +34,7 @@ const (
 	colorWhite  = "\033[37m"
 )
 
-var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, HelpCMD}
+var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, AddRoleCMD, HelpCMD}
 
 func (c *Command) Validate() bool {
 	return utils.Contain(validCommands, c.c)

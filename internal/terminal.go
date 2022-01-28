@@ -13,6 +13,7 @@ type Terminal interface {
 	HandleReadCMD(arg string) Printable
 	HandleBackCMD() Printable
 	HandleAddUserCMD(args ...string) Printable
+	HandleAddRoleCMD(args ...string) Printable
 	getName() string
 	getVersion() string
 	setUser(*user)
@@ -64,6 +65,13 @@ func HandleCmd(terminal Terminal, cmd Command) {
 			return
 		}
 		TPrint(terminal.HandleAddUserCMD(cmd.args...))
+		return
+	case AddRoleCMD:
+		if len(cmd.args) == 0 {
+			TPrint(NewHelp(AddRoleUsageString))
+			return
+		}
+		TPrint(terminal.HandleAddRoleCMD(cmd.args...))
 		return
 	}
 }

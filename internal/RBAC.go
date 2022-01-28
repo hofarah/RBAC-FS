@@ -75,6 +75,21 @@ func (r *RBACTerminal) HandleAddUserCMD(args ...string) Printable {
 	}
 	return NewPrintable("new user successfully created")
 }
+
+func (r *RBACTerminal) HandleAddRoleCMD(args ...string) Printable {
+	if !r.user.isAdmin() {
+		return NewError("you are not admin!!")
+	}
+	var (
+		rol string
+	)
+	rol = args[0]
+	err := NewRole(rol)
+	if err != nil {
+		return NewPrintable("an error accrued", OPrint{color: colorRed})
+	}
+	return NewPrintable("new role successfully created")
+}
 func (r *RBACTerminal) getTerminal() Terminal {
 	return r
 }

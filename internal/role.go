@@ -17,3 +17,11 @@ func GetRole(r string) *role {
 	}
 	return &role{id: id, name: r}
 }
+
+func NewRole(role string) error {
+	_, err := conn.ExecContext(context.Background(), "insert into roles (`name`) values (?)", role)
+	if err != nil {
+		return err
+	}
+	return nil
+}
