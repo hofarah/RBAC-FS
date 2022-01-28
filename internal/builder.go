@@ -12,7 +12,7 @@ func BuildTerminal(builder TBuilder) Terminal {
 	return builder.getTerminal()
 }
 
-func getBuilder(builderType string) TBuilder {
+func GetBuilder(builderType string) TBuilder {
 	if builderType == "RBAC" {
 		return &RBACTerminal{}
 	}
