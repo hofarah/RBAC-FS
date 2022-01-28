@@ -13,9 +13,13 @@ type Terminal interface {
 	HandleReadCMD(arg string) Printable
 	HandleBackCMD() Printable
 	HandleAddUserCMD(args ...string) Printable
+	HandleRemoveUserCMD(args ...string) Printable
 	HandleAddRoleCMD(args ...string) Printable
-	HandleSetRoleForFileCMD(args ...string) Printable
-	HandleSetRoleForUserCMD(args ...string) Printable
+	HandleRemoveRoleCMD(args ...string) Printable
+	HandleAddRoleForFileCMD(args ...string) Printable
+	HandleRemoveRoleForFileCMD(args ...string) Printable
+	HandleAddRoleForUserCMD(args ...string) Printable
+	HandleRemoveRoleForUserCMD(args ...string) Printable
 	getName() string
 	getVersion() string
 	setUser(*user)
@@ -72,6 +76,13 @@ func HandleCmd(terminal Terminal, cmd Command) {
 		}
 		TPrint(terminal.HandleAddUserCMD(cmd.args...))
 		return
+	case RemoveUserCMD:
+		if len(cmd.args) == 0 {
+			TPrint(NewHelp(RemoveUserUsageString))
+			return
+		}
+		TPrint(terminal.HandleRemoveUserCMD(cmd.args...))
+		return
 	case AddRoleCMD:
 		if len(cmd.args) == 0 {
 			TPrint(NewHelp(AddRoleUsageString))
@@ -79,19 +90,40 @@ func HandleCmd(terminal Terminal, cmd Command) {
 		}
 		TPrint(terminal.HandleAddRoleCMD(cmd.args...))
 		return
-	case SetRoleForFileCMD:
-		if len(cmd.args) <= 1 {
-			TPrint(NewHelp(SetRoleForFileCMDUsageString))
+	case RemoveRoleCMD:
+		if len(cmd.args) == 0 {
+			TPrint(NewHelp(RemoveRoleUsageString))
 			return
 		}
-		TPrint(terminal.HandleSetRoleForUserCMD(cmd.args...))
+		TPrint(terminal.HandleRemoveRoleCMD(cmd.args...))
+		return
+	case AddRoleForFileCMD:
+		if len(cmd.args) <= 1 {
+			TPrint(NewHelp(AddRoleForFileCMDUsageString))
+			return
+		}
+		TPrint(terminal.HandleAddRoleForFileCMD(cmd.args...))
+		return
+	case RemoveRoleForFileCMD:
+		if len(cmd.args) <= 1 {
+			TPrint(NewHelp(RemoveRoleForFileCMDUsageString))
+			return
+		}
+		TPrint(terminal.HandleRemoveRoleForFileCMD(cmd.args...))
 		return
 	case AddUserRoleCMD:
 		if len(cmd.args) <= 1 {
 			TPrint(NewHelp(AddUserRoleUsageString))
 			return
 		}
-		TPrint(terminal.HandleSetRoleForUserCMD(cmd.args...))
+		TPrint(terminal.HandleAddRoleForUserCMD(cmd.args...))
+		return
+	case RemoveUserRoleCMD:
+		if len(cmd.args) <= 1 {
+			TPrint(NewHelp(RemoveUserRoleUsageString))
+			return
+		}
+		TPrint(terminal.HandleRemoveRoleForUserCMD(cmd.args...))
 		return
 	}
 }

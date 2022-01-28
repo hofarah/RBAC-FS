@@ -57,6 +57,16 @@ func (u *user) UpdateUserPass(newPass string) error {
 	}
 	return nil
 }
+func RemoveUser(username string) error {
+	d, err := conn.ExecContext(context.Background(), "delete from users where username=?", username)
+	if err != nil {
+		return err
+	}
+	if count, _ := d.RowsAffected(); count == 0 {
+		return errors.New("not deleted")
+	}
+	return nil
+}
 
 func NewUser(username, password, role string) error {
 

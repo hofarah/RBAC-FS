@@ -87,7 +87,17 @@ func (r *RBACTerminal) HandleAddUserCMD(args ...string) Printable {
 	}
 	return NewPrintable("new user successfully created")
 }
-func (r *RBACTerminal) HandleSetRoleForUserCMD(args ...string) Printable {
+func (r *RBACTerminal) HandleRemoveUserCMD(args ...string) Printable {
+	if !r.user.isAdmin() {
+		return NewError("you are not admin!!")
+	}
+	err := RemoveUser(args[0])
+	if err != nil {
+		return NewPrintable("an error accrued", OPrint{color: colorRed})
+	}
+	return NewPrintable("user successfully deleted")
+}
+func (r *RBACTerminal) HandleAddRoleForUserCMD(args ...string) Printable {
 	if !r.user.isAdmin() {
 		return NewError("you are not admin!!")
 	}
@@ -111,6 +121,30 @@ func (r *RBACTerminal) HandleSetRoleForUserCMD(args ...string) Printable {
 	}
 	return NewPrintable("new user role successfully added")
 }
+func (r *RBACTerminal) HandleRemoveRoleForUserCMD(args ...string) Printable {
+	if !r.user.isAdmin() {
+		return NewError("you are not admin!!")
+	}
+	var (
+		rol      string
+		username string
+	)
+	username = args[0]
+	rol = args[1]
+	rl := GetRole(rol)
+	if rl == nil {
+		return NewError("role not found")
+	}
+	us := GetUsername(username)
+	if us == nil {
+		return NewError("user not found")
+	}
+	_, err := conn.ExecContext(context.Background(), "delete from userRoles where roleID=? AND userID=? ", rl.id, us.id)
+	if err != nil {
+		return NewError("an error accuerd")
+	}
+	return NewPrintable("user role successfully deleted")
+}
 
 func (r *RBACTerminal) HandleAddRoleCMD(args ...string) Printable {
 	if !r.user.isAdmin() {
@@ -126,7 +160,17 @@ func (r *RBACTerminal) HandleAddRoleCMD(args ...string) Printable {
 	}
 	return NewPrintable("new role successfully created")
 }
-func (r *RBACTerminal) HandleSetRoleForFileCMD(args ...string) Printable {
+func (r *RBACTerminal) HandleRemoveRoleCMD(args ...string) Printable {
+	if !r.user.isAdmin() {
+		return NewError("you are not admin!!")
+	}
+	err := RemoveRole(args[0])
+	if err != nil {
+		return NewPrintable("an error accrued", OPrint{color: colorRed})
+	}
+	return NewPrintable("role successfully deleted")
+}
+func (r *RBACTerminal) HandleAddRoleForFileCMD(args ...string) Printable {
 	if !r.user.isAdmin() {
 		return NewError("you are not admin!!")
 	}
@@ -145,6 +189,26 @@ func (r *RBACTerminal) HandleSetRoleForFileCMD(args ...string) Printable {
 		return NewPrintable("an error accrued", OPrint{color: colorRed})
 	}
 	return NewPrintable("new role for file successfully created")
+}
+func (r *RBACTerminal) HandleRemoveRoleForFileCMD(args ...string) Printable {
+	if !r.user.isAdmin() {
+		return NewError("you are not admin!!")
+	}
+	var (
+		filePath string
+		rol      string
+	)
+	filePath = filepath.Join(r.currentPath, args[0])
+	rol = args[1]
+	rr := GetRole(rol)
+	if rr == nil {
+		return NewError("role not found")
+	}
+	err := RemoveRoleAccess(rr.id, filePath)
+	if err != nil {
+		return NewPrintable("an error accrued", OPrint{color: colorRed})
+	}
+	return NewPrintable("role for file successfully deleted")
 }
 func (r *RBACTerminal) getTerminal() Terminal {
 	return r

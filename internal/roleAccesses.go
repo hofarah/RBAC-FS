@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"errors"
 )
 
 type roleAccess struct {
@@ -19,7 +20,18 @@ func GetRoleAccess(filePath string) *roleAccess {
 }
 
 func NewRoleAccess(roleID int, filePath string) error {
-	_, err := conn.ExecContext(context.Background(), "insert into roleAccesses (roleID,filePath) values (?,?)", roleID, filePath)
+	d, err := conn.ExecContext(context.Background(), "insert into roleAccesses (roleID,filePath) values (?,?)", roleID, filePath)
+	if err != nil {
+		return err
+	}
+	if count, _ := d.RowsAffected(); count == 0 {
+		return errors.New("not deleted")
+	}
+	return nil
+}
+
+func RemoveRoleAccess(roleID int, filePath string) error {
+	_, err := conn.ExecContext(context.Background(), "delete from roleAccesses where roleID=? AND filePath=?", roleID, filePath)
 	if err != nil {
 		return err
 	}

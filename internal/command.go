@@ -20,14 +20,26 @@ const (
 	AddUserCMD         = "add-user"
 	AddUserUsageString = "wrong COMMAND. usage: " + AddUserCMD + " <user name> + Optional[Role]"
 
+	RemoveUserCMD         = "remove-user"
+	RemoveUserUsageString = "wrong COMMAND. usage: " + RemoveUserCMD + " <user name>"
+
 	AddUserRoleCMD         = "add-user-role"
 	AddUserRoleUsageString = "wrong COMMAND. usage: " + AddUserRoleCMD + " <user name>  <role name>"
+
+	RemoveUserRoleCMD         = "remove-user-role"
+	RemoveUserRoleUsageString = "wrong COMMAND. usage: " + RemoveUserRoleCMD + " <user name>  <role name>"
 
 	AddRoleCMD         = "add-role"
 	AddRoleUsageString = "wrong COMMAND. usage: " + AddRoleCMD + " <role name>"
 
-	SetRoleForFileCMD            = "set-file-role"
-	SetRoleForFileCMDUsageString = "wrong COMMAND. usage: " + SetRoleForFileCMD + " <file name> <role-name>"
+	RemoveRoleCMD         = "remove-role"
+	RemoveRoleUsageString = "wrong COMMAND. usage: " + RemoveRoleCMD + " <role name>"
+
+	AddRoleForFileCMD            = "add-file-role"
+	AddRoleForFileCMDUsageString = "wrong COMMAND. usage: " + AddRoleForFileCMD + " <file name> <role-name>"
+
+	RemoveRoleForFileCMD            = "remove-file-role"
+	RemoveRoleForFileCMDUsageString = "wrong COMMAND. usage: " + RemoveRoleForFileCMD + " <file name> <role-name>"
 
 	OpenUsageString = "wrong COMMAND. usage: " + OpenCMD + " <folder name>"
 	ReadUsageString = "wrong COMMAND. usage: " + ReadCMD + " <file name>"
@@ -43,7 +55,7 @@ const (
 	colorWhite  = "\033[37m"
 )
 
-var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, AddRoleCMD, AddUserRoleCMD, SetRoleForFileCMD, HelpCMD}
+var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, HelpCMD}
 
 func (c *Command) Validate() bool {
 	return utils.Contain(validCommands, c.c)
