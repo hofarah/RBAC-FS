@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"bufio"
+	"os"
 	"os/exec"
 )
 
@@ -10,6 +12,9 @@ type RBACTerminal struct {
 
 func (r *RBACTerminal) getName() string {
 	return r.name
+}
+func (r *RBACTerminal) setUser(u *user) {
+	r.user = u
 }
 func (r *RBACTerminal) getVersion() string {
 	return r.version
@@ -46,6 +51,29 @@ func (r *RBACTerminal) HandleReadCMD(arg string) Printable {
 func (r *RBACTerminal) HandleBackCMD() Printable {
 	//todo implement me
 	return NewPrintable("back to parent folder")
+}
+func (r *RBACTerminal) HandleAddUserCMD(args ...string) Printable {
+	if !r.user.isAdmin() {
+		return NewError("you are not admin!!")
+	}
+	var (
+		role     string
+		username string
+	)
+	username = args[0]
+	if len(args) == 2 {
+		role = args[1]
+	} else {
+		role = GetDefault("role")
+	}
+	TPrint(NewPrintable("please enter password of new user:", OPrint{keepCurrentLine: true}))
+	reader := bufio.NewReader(os.Stdin)
+	newPassword := format(reader.ReadString('\n'))
+	err := NewUser(username, newPassword, role)
+	if err != nil {
+		return NewPrintable("an error accrued", OPrint{color: colorRed})
+	}
+	return NewPrintable("new user successfully created")
 }
 func (r *RBACTerminal) getTerminal() Terminal {
 	return r

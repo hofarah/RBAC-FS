@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/hofarah/RBAC-FS/internal"
+	_ "github.com/hofarah/RBAC-FS/logger"
 )
 
 func main() {
