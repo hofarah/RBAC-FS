@@ -11,11 +11,12 @@ type Command struct {
 }
 
 const (
-	ListCMD = "list"
-	OpenCMD = "open"
-	BackCMD = "back"
-	ReadCMD = "read"
-	HelpCMD = "help"
+	ListCMD       = "list"   //todo
+	OpenCMD       = "open"   //todo
+	BackCMD       = "back"   //todo
+	ReadCMD       = "read"   //todo
+	CreateFileCMD = "create" //todo
+	HelpCMD       = "help"
 
 	AddUserCMD         = "add-user"
 	AddUserUsageString = "wrong COMMAND. usage: " + AddUserCMD + " <user name> + Optional[Role]"
