@@ -9,3 +9,7 @@ func (c *command) Do() string {
 	//todo run command
 	return ""
 }
+
+type Parser interface {
+	Parse() string
+}

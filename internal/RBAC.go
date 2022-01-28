@@ -4,9 +4,9 @@ type RBACTerminal struct {
 	baseTerminal
 }
 
-func (r *RBACTerminal) HandleCmd(command) string {
-	//todo handle command
-	return ""
+func (r *RBACTerminal) HandleCmd(c command) string {
+	//logic for RBAC
+	return c.Do()
 }
 func (r *RBACTerminal) setName() {
 	r.name = "RBAC Terminal"
