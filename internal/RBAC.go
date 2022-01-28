@@ -1,5 +1,9 @@
 package internal
 
+import (
+	"os/exec"
+)
+
 type RBACTerminal struct {
 	baseTerminal
 }
@@ -16,9 +20,20 @@ func (r *RBACTerminal) setName() {
 func (r *RBACTerminal) setVersion() {
 	r.version = "1.0"
 }
-func (r *RBACTerminal) HandleListCMD() Printable {
-	//todo implement me
-	return NewPrintable("list of current directory")
+func (r *RBACTerminal) HandleListCMD(args ...string) Printable {
+	//todo check permission of user
+	cmd := exec.Command("ls", args...)
+	out, _ := cmd.Output()
+	//todo check output
+
+	/////////////fixme OR
+
+	//dirs,_:=os.ReadDir(args[0])
+	//for _,dir:=range dirs{
+	//	//todo check permission and delete
+	//}
+
+	return NewPrintable(string(out))
 }
 func (r *RBACTerminal) HandleOpenCMD(arg string) Printable {
 	//todo implement me

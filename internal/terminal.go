@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 )
 
 type Terminal interface {
-	HandleListCMD() Printable
+	HandleListCMD(args ...string) Printable
 	HandleOpenCMD(arg string) Printable
 	HandleReadCMD(arg string) Printable
 	HandleBackCMD() Printable
@@ -21,8 +22,13 @@ type baseTerminal struct {
 }
 
 func HandleCmd(terminal Terminal, cmd Command) {
+	if cmd.IsEmpty() {
+		return
+	}
 	if !cmd.Validate() {
-		TPrint(NewError("command is not valid - enter help to read instructions."))
+		//TPrint(NewError("command is not valid - enter help to read instructions."))
+		out, _ := exec.Command(cmd.c, cmd.args...).Output()
+		TPrint(NewPrintable(string(out), colorCyan))
 		return
 	}
 	switch cmd.GetType() {
@@ -30,24 +36,24 @@ func HandleCmd(terminal Terminal, cmd Command) {
 		TPrint(NewHelp(HelpString))
 		return
 	case ListCMD:
-		terminal.HandleListCMD()
+		TPrint(terminal.HandleListCMD(cmd.args...))
 		return
 	case BackCMD:
-		terminal.HandleBackCMD()
+		TPrint(terminal.HandleBackCMD())
 		return
 	case OpenCMD:
 		if len(cmd.args) == 0 {
 			TPrint(NewHelp(OpenUsageString))
 			return
 		}
-		terminal.HandleOpenCMD(cmd.args[0])
+		TPrint(terminal.HandleOpenCMD(cmd.args[0]))
 		return
 	case ReadCMD:
 		if len(cmd.args) == 0 {
 			TPrint(NewHelp(ReadUsageString))
 			return
 		}
-		terminal.HandleReadCMD(cmd.args[0])
+		TPrint(terminal.HandleReadCMD(cmd.args[0]))
 		return
 	}
 }

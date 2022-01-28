@@ -39,6 +39,9 @@ func (c *Command) Validate() bool {
 func (c *Command) GetType() string {
 	return c.c
 }
+func (c *Command) IsEmpty() bool {
+	return c.c == ""
+}
 func NewCommand(line string) Command {
 	line = strings.TrimSpace(line)
 	args := strings.Split(line, " ")
