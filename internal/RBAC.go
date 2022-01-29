@@ -229,6 +229,41 @@ func (r *RBACTerminal) HandleRemoveRoleForFileCMD(args ...string) Printable {
 	}
 	return NewPrintable("role for file successfully deleted")
 }
+
+func (r *RBACTerminal) HandleCreateFileCMD(arg string) Printable {
+	newFilePath := filepath.Join(r.currentPath, arg)
+	_, err := os.ReadFile(newFilePath)
+	if err == nil {
+		return NewError("file already exist")
+	}
+
+	_, err = os.Create(newFilePath)
+	if err != nil {
+		return NewError("create file failed")
+	}
+	err = NewUserAccess(r.user.id, newFilePath)
+	if err != nil {
+		return NewError("create file failed")
+	}
+	return NewPrintable("file successfully created")
+}
+func (r *RBACTerminal) HandleCreateDirCMD(arg string) Printable {
+	newFilePath := filepath.Join(r.currentPath, arg)
+	_, err := os.ReadDir(newFilePath)
+	if err == nil {
+		return NewError("folder already exist")
+	}
+
+	err = os.Mkdir(newFilePath, os.ModePerm)
+	if err != nil {
+		return NewError("create folder failed")
+	}
+	err = NewUserAccess(r.user.id, newFilePath)
+	if err != nil {
+		return NewError("create folder failed")
+	}
+	return NewPrintable("folder successfully created")
+}
 func (r *RBACTerminal) getTerminal() Terminal {
 	return r
 }

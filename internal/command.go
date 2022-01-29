@@ -11,12 +11,18 @@ type Command struct {
 }
 
 const (
-	ListCMD       = "list"
-	OpenCMD       = "open"
-	BackCMD       = "back" //todo
-	ReadCMD       = "read"
-	CreateFileCMD = "create" //todo
-	HelpCMD       = "help"
+	ListCMD = "list"
+	OpenCMD = "open"
+	BackCMD = "back"
+	ReadCMD = "read"
+
+	CreateFileCMD         = "create-file" //todo
+	CreateFileUsageString = "wrong COMMAND. usage: " + CreateFileCMD + " <new file name>"
+
+	CreateDirCMD         = "create-folder" //todo
+	CreateDirUsageString = "wrong COMMAND. usage: " + CreateDirCMD + " <new folder name>"
+
+	HelpCMD = "help"
 
 	AddUserCMD         = "add-user"
 	AddUserUsageString = "wrong COMMAND. usage: " + AddUserCMD + " <user name> + Optional[Role]"
@@ -56,7 +62,7 @@ const (
 	colorWhite  = "\033[37m"
 )
 
-var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, HelpCMD}
+var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, CreateDirCMD, CreateFileCMD, HelpCMD}
 
 func (c *Command) Validate() bool {
 	return utils.Contain(validCommands, c.c)

@@ -48,6 +48,9 @@ func access(userID int, path string) bool {
 	return count >= 1
 }
 func Access(userID int, path string) bool {
+	if UserAccess(userID, path) {
+		return true
+	}
 	if access(userID, path) {
 		return true
 	} else { //recursive check
