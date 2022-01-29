@@ -21,6 +21,7 @@ type Terminal interface {
 	HandleAddRoleForUserCMD(args ...string) Printable
 	HandleRemoveRoleForUserCMD(args ...string) Printable
 	getName() string
+	getPath() string
 	getVersion() string
 	setUser(*user)
 	initPath()
@@ -132,7 +133,7 @@ func Listen(terminal Terminal) {
 	fmt.Println("starting terminal", terminal.getName(), "version:", terminal.getVersion())
 	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Print(colorYellow, ">>>>> ", colorReset)
+		fmt.Print(colorYellow, terminal.getPath(), ">> ", colorReset)
 		reader.Reset(os.Stdin)
 		line, _ := reader.ReadString('\n')
 		HandleCmd(terminal, NewCommand(line[:len(line)-1]))

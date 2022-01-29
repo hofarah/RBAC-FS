@@ -12,7 +12,7 @@ type Command struct {
 
 const (
 	ListCMD       = "list"
-	OpenCMD       = "open" //todo
+	OpenCMD       = "open"
 	BackCMD       = "back" //todo
 	ReadCMD       = "read"
 	CreateFileCMD = "create" //todo

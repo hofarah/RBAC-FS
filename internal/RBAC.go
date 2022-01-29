@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 type RBACTerminal struct {
@@ -14,6 +15,9 @@ type RBACTerminal struct {
 
 func (r *RBACTerminal) getName() string {
 	return r.name
+}
+func (r *RBACTerminal) getPath() string {
+	return r.currentPath
 }
 func (r *RBACTerminal) setUser(u *user) {
 	r.user = u
@@ -50,8 +54,13 @@ func (r *RBACTerminal) HandleListCMD(args ...string) Printable {
 	return NewPrintable(response)
 }
 func (r *RBACTerminal) HandleOpenCMD(arg string) Printable {
-	//todo implement me
-	return NewPrintable("opening folder:" + arg)
+	newPath := filepath.Join(r.currentPath, arg)
+	_, err := os.ReadDir(newPath)
+	if err != nil {
+		return NewError(err.Error())
+	}
+	r.currentPath = newPath
+	return NewPrintable("")
 }
 func (r *RBACTerminal) HandleReadCMD(arg string) Printable {
 	if !Access(r.user.id, filepath.Join(r.currentPath, arg)) {
@@ -64,8 +73,15 @@ func (r *RBACTerminal) HandleReadCMD(arg string) Printable {
 	return NewPrintable(string(out))
 }
 func (r *RBACTerminal) HandleBackCMD() Printable {
-	//todo implement me
-	return NewPrintable("back to parent folder")
+	paths := strings.Split(r.currentPath, "/")
+	//if len(paths)==0{}
+	newPath := strings.Join(paths[:len(paths)-1], "/")
+	_, err := os.ReadDir(newPath)
+	if err != nil {
+		return NewError(err.Error())
+	}
+	r.currentPath = newPath
+	return NewPrintable("")
 }
 func (r *RBACTerminal) HandleAddUserCMD(args ...string) Printable {
 	if !r.user.isAdmin() {
