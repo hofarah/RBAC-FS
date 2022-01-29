@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"errors"
+	"strings"
 )
 
 type roleAccess struct {
@@ -37,7 +38,7 @@ func RemoveRoleAccess(roleID int, filePath string) error {
 	}
 	return nil
 }
-func Access(userID int, path string) bool {
+func access(userID int, path string) bool {
 	var count int
 	err := conn.QueryRowContext(context.Background(), "select count(*) from roleAccesses inner join userRoles on (roleAccesses.roleID=userRoles.roleID) where userID=? AND filePath=?",
 		userID, path).Scan(&count)
@@ -45,4 +46,23 @@ func Access(userID int, path string) bool {
 		return false
 	}
 	return count >= 1
+}
+func Access(userID int, path string) bool {
+	if access(userID, path) {
+		return true
+	} else { //recursive check
+		currentPath := path
+		for currentPath != "" {
+			if access(userID, currentPath) {
+				return true
+			}
+			paths := strings.Split(currentPath, "/")
+			if len(paths) == 0 {
+				break
+			}
+			currentPath = strings.Join(paths[:len(paths)-1], "/")
+		}
+
+	}
+	return false
 }

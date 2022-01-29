@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 )
 
 type RBACTerminal struct {
@@ -45,19 +44,6 @@ func (r *RBACTerminal) HandleListCMD(args ...string) Printable {
 	for _, entitiy := range dirs {
 		if Access(r.user.id, filepath.Join(r.currentPath, entitiy.Name())) {
 			response += entitiy.Name() + "\n"
-		} else { //recursive check
-			currentPath := r.currentPath
-			for currentPath != "" {
-				if Access(r.user.id, currentPath) {
-					response += entitiy.Name() + "\n"
-					break
-				}
-				paths := strings.Split(currentPath, "/")
-				if len(paths) == 0 {
-					break
-				}
-				currentPath = strings.Join(paths[:len(paths)-1], "/")
-			}
 		}
 	}
 
@@ -68,8 +54,14 @@ func (r *RBACTerminal) HandleOpenCMD(arg string) Printable {
 	return NewPrintable("opening folder:" + arg)
 }
 func (r *RBACTerminal) HandleReadCMD(arg string) Printable {
-	//todo implement me
-	return NewPrintable("reading file:" + arg)
+	if !Access(r.user.id, filepath.Join(r.currentPath, arg)) {
+		return NewError("you don't have access to read this file")
+	}
+	out, err := os.ReadFile(filepath.Join(r.currentPath, arg))
+	if err != nil {
+		return NewError(err.Error())
+	}
+	return NewPrintable(string(out))
 }
 func (r *RBACTerminal) HandleBackCMD() Printable {
 	//todo implement me
