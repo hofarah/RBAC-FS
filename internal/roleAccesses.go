@@ -37,3 +37,12 @@ func RemoveRoleAccess(roleID int, filePath string) error {
 	}
 	return nil
 }
+func Access(userID int, path string) bool {
+	var count int
+	err := conn.QueryRowContext(context.Background(), "select count(*) from roleAccesses inner join userRoles on (roleAccesses.roleID=userRoles.roleID) where userID=? AND filePath=?",
+		userID, path).Scan(&count)
+	if err != nil {
+		return false
+	}
+	return count >= 1
+}

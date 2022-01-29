@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 type RBACTerminal struct {
@@ -38,19 +39,34 @@ func (r *RBACTerminal) setVersion() {
 	r.version = "1.0"
 }
 func (r *RBACTerminal) HandleListCMD(args ...string) Printable {
-	//todo check permission of user
-	cmd := exec.Command("ls", args...)
-	out, _ := cmd.Output()
-	//todo check output
+	////todo check permission of user
+	//cmd := exec.Command("ls", args...)
+	//out, _ := cmd.Output()
+	////todo check output
 
 	/////////////fixme OR
+	var response string
+	dirs, _ := os.ReadDir(r.currentPath)
+	for _, entitiy := range dirs {
+		if Access(r.user.id, filepath.Join(r.currentPath, entitiy.Name())) /*|| r.user.isAdmin()*/ {
+			response += entitiy.Name() + "\n"
+		} else { //recursive check
+			currentPath := r.currentPath
+			for currentPath != "" {
+				if Access(r.user.id, currentPath) {
+					response += entitiy.Name() + "\n"
+					break
+				}
+				paths := strings.Split(currentPath, "/")
+				if len(paths) == 0 {
+					break
+				}
+				currentPath = strings.Join(paths[:len(paths)-1], "/")
+			}
+		}
+	}
 
-	//dirs,_:=os.ReadDir(args[0])
-	//for _,dir:=range dirs{
-	//	//todo check permission and delete
-	//}
-
-	return NewPrintable(string(out))
+	return NewPrintable(response)
 }
 func (r *RBACTerminal) HandleOpenCMD(arg string) Printable {
 	//todo implement me
