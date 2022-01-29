@@ -39,12 +39,7 @@ func (r *RBACTerminal) setVersion() {
 	r.version = "1.0"
 }
 func (r *RBACTerminal) HandleListCMD(args ...string) Printable {
-	////todo check permission of user
-	//cmd := exec.Command("ls", args...)
-	//out, _ := cmd.Output()
-	////todo check output
 
-	/////////////fixme OR
 	var response string
 	dirs, _ := os.ReadDir(r.currentPath)
 	for _, entitiy := range dirs {
