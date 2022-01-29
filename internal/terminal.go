@@ -15,6 +15,8 @@ type Terminal interface {
 	HandleAddUserCMD(args ...string) Printable
 	HandleCreateFileCMD(args string) Printable
 	HandleCreateDirCMD(args string) Printable
+	HandleRemoveFileCMD(args string) Printable
+	HandleRemoveDirCMD(args string) Printable
 	HandleRemoveUserCMD(args ...string) Printable
 	HandleAddRoleCMD(args ...string) Printable
 	HandleRemoveRoleCMD(args ...string) Printable
@@ -141,6 +143,20 @@ func HandleCmd(terminal Terminal, cmd Command) {
 			return
 		}
 		TPrint(terminal.HandleCreateDirCMD(cmd.args[0]))
+		return
+	case RemoveFileCMD:
+		if len(cmd.args) == 0 {
+			TPrint(NewHelp(RemoveFileUsageString))
+			return
+		}
+		TPrint(terminal.HandleRemoveFileCMD(cmd.args[0]))
+		return
+	case RemoveDirCMD:
+		if len(cmd.args) == 0 {
+			TPrint(NewHelp(RemoveDirUsageString))
+			return
+		}
+		TPrint(terminal.HandleRemoveDirCMD(cmd.args[0]))
 		return
 	}
 }

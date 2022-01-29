@@ -264,6 +264,42 @@ func (r *RBACTerminal) HandleCreateDirCMD(arg string) Printable {
 	}
 	return NewPrintable("folder successfully created")
 }
+func (r *RBACTerminal) HandleRemoveFileCMD(arg string) Printable {
+	filePathToDelete := filepath.Join(r.currentPath, arg)
+	if !Access(r.user.id, filePathToDelete) {
+		return NewError("you don't have Access to this file")
+	}
+	_, err := os.ReadFile(filePathToDelete)
+	if err != nil {
+		return NewError("file does not exist")
+	}
+	removeRecursively(r.user.id, filePathToDelete)
+
+	err = os.Remove(filePathToDelete)
+	if err != nil {
+		return NewError("remove file failed")
+	}
+	return NewPrintable("file successfully removed")
+}
+func (r *RBACTerminal) HandleRemoveDirCMD(arg string) Printable {
+	filePathToDelete := filepath.Join(r.currentPath, arg)
+
+	if !Access(r.user.id, filePathToDelete) {
+		return NewError("you don't have Access to this folder")
+	}
+	_, err := os.ReadDir(filePathToDelete)
+	if err != nil {
+		return NewError("folder does not exist")
+	}
+	removeRecursively(r.user.id, filePathToDelete)
+
+	err = os.RemoveAll(filePathToDelete)
+	if err != nil {
+		return NewError("remove folder failed")
+	}
+
+	return NewPrintable("folder successfully removed")
+}
 func (r *RBACTerminal) getTerminal() Terminal {
 	return r
 }

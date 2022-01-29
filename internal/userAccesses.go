@@ -3,6 +3,8 @@ package internal
 import (
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
 )
 
 type userAccess struct {
@@ -37,4 +39,16 @@ func RemoveUserAccess(userID int, filePath string) error {
 		return err
 	}
 	return nil
+}
+func removeRecursively(userID int, filePath string) {
+	dirs, err := os.ReadDir(filePath)
+	if err != nil {
+		RemoveUserAccess(userID, filePath)
+	} else {
+		for _, f := range dirs {
+			removeRecursively(userID, filepath.Join(filePath, f.Name()))
+		}
+		RemoveUserAccess(userID, filePath)
+
+	}
 }

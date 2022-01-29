@@ -16,11 +16,17 @@ const (
 	BackCMD = "back"
 	ReadCMD = "read"
 
-	CreateFileCMD         = "create-file" //todo
+	CreateFileCMD         = "create-file"
 	CreateFileUsageString = "wrong COMMAND. usage: " + CreateFileCMD + " <new file name>"
 
-	CreateDirCMD         = "create-folder" //todo
+	CreateDirCMD         = "create-folder"
 	CreateDirUsageString = "wrong COMMAND. usage: " + CreateDirCMD + " <new folder name>"
+
+	RemoveFileCMD         = "remove-file" //todo
+	RemoveFileUsageString = "wrong COMMAND. usage: " + RemoveFileCMD + " <file name>"
+
+	RemoveDirCMD         = "remove-folder" //todo
+	RemoveDirUsageString = "wrong COMMAND. usage: " + RemoveDirCMD + " <folder name>"
 
 	HelpCMD = "help"
 
@@ -62,7 +68,7 @@ const (
 	colorWhite  = "\033[37m"
 )
 
-var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, CreateDirCMD, CreateFileCMD, HelpCMD}
+var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, CreateDirCMD, CreateFileCMD, RemoveDirCMD, RemoveFileCMD, HelpCMD}
 
 func (c *Command) Validate() bool {
 	return utils.Contain(validCommands, c.c)
