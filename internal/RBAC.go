@@ -48,7 +48,7 @@ func (r *RBACTerminal) HandleListCMD(args ...string) Printable {
 	var response string
 	dirs, _ := os.ReadDir(r.currentPath)
 	for _, entitiy := range dirs {
-		if Access(r.user.id, filepath.Join(r.currentPath, entitiy.Name())) /*|| r.user.isAdmin()*/ {
+		if Access(r.user.id, filepath.Join(r.currentPath, entitiy.Name())) {
 			response += entitiy.Name() + "\n"
 		} else { //recursive check
 			currentPath := r.currentPath
