@@ -3,6 +3,7 @@ package internal
 import (
 	"bufio"
 	"fmt"
+	"go.uber.org/zap"
 	"os"
 	"os/exec"
 )
@@ -41,11 +42,11 @@ type baseTerminal struct {
 }
 
 func HandleCmd(terminal Terminal, cmd Command) {
+	zap.L().Info("new command", zap.Any("command type", cmd.GetType()), zap.Any("command args", cmd.args), zap.Any("terminal", terminal))
 	if cmd.IsEmpty() {
 		return
 	}
 	if !cmd.Validate() {
-		//TPrint(NewError("command is not valid - enter help to read instructions."))
 		out, _ := exec.Command(cmd.c, cmd.args...).Output()
 		TPrint(NewPrintable(string(out), OPrint{color: colorCyan}))
 		return
@@ -192,6 +193,8 @@ func InitialChecks(terminal Terminal) *user {
 				}
 				terminal.setUser(u)
 				terminal.initPath()
+				zap.L().Info("new entrance", zap.Any("user", u.username))
+
 				return u
 			}
 			TPrint(NewError("wrong input please try again"))
