@@ -3,15 +3,23 @@ package internal
 import (
 	"bufio"
 	"context"
+	"go.uber.org/zap"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 )
 
 type RBACTerminal struct {
 	baseTerminal
 }
+
+const (
+	Read    = 1
+	Write   = 2
+	Execute = 3
+)
 
 func (r *RBACTerminal) getName() string {
 	return r.name
@@ -46,7 +54,7 @@ func (r *RBACTerminal) HandleListCMD(args ...string) Printable {
 	var response string
 	dirs, _ := os.ReadDir(r.currentPath)
 	for _, entitiy := range dirs {
-		if Access(r.user.id, filepath.Join(r.currentPath, entitiy.Name())) {
+		if Access(r.user.id, 1, filepath.Join(r.currentPath, entitiy.Name())) {
 			response += entitiy.Name() + "\n"
 		}
 	}
@@ -63,7 +71,7 @@ func (r *RBACTerminal) HandleOpenCMD(arg string) Printable {
 	return NewPrintable("")
 }
 func (r *RBACTerminal) HandleReadCMD(arg string) Printable {
-	if !Access(r.user.id, filepath.Join(r.currentPath, arg)) {
+	if !Access(r.user.id, Read, filepath.Join(r.currentPath, arg)) {
 		return NewError("you don't have access to read this file")
 	}
 	out, err := os.ReadFile(filepath.Join(r.currentPath, arg))
@@ -203,7 +211,7 @@ func (r *RBACTerminal) HandleAddRoleForFileCMD(args ...string) Printable {
 	if rr == nil {
 		return NewError("role not found")
 	}
-	err := NewRoleAccess(rr.id, filePath)
+	err := NewRoleAccess(rr.id, AclToInt(args[2]), filePath)
 	if err != nil {
 		return NewPrintable("an error accrued", OPrint{color: colorRed})
 	}
@@ -218,12 +226,16 @@ func (r *RBACTerminal) HandleRemoveRoleForFileCMD(args ...string) Printable {
 		rol      string
 	)
 	filePath = filepath.Join(r.currentPath, args[0])
+	_, err := syscall.Open(filePath, syscall.SYS_READ, 0)
+	if err != nil {
+		return NewError("file does not exist")
+	}
 	rol = args[1]
 	rr := GetRole(rol)
 	if rr == nil {
 		return NewError("role not found")
 	}
-	err := RemoveRoleAccess(rr.id, filePath)
+	err = RemoveRoleAccess(rr.id, filePath)
 	if err != nil {
 		return NewPrintable("an error accrued", OPrint{color: colorRed})
 	}
@@ -249,7 +261,7 @@ func (r *RBACTerminal) HandleCreateFileCMD(arg string) Printable {
 }
 func (r *RBACTerminal) HandleCreateDirCMD(arg string) Printable {
 	newFilePath := filepath.Join(r.currentPath, arg)
-	_, err := os.ReadDir(newFilePath)
+	_, err := syscall.Open(newFilePath, syscall.SYS_READ, 0)
 	if err == nil {
 		return NewError("folder already exist")
 	}
@@ -266,12 +278,12 @@ func (r *RBACTerminal) HandleCreateDirCMD(arg string) Printable {
 }
 func (r *RBACTerminal) HandleRemoveFileCMD(arg string) Printable {
 	filePathToDelete := filepath.Join(r.currentPath, arg)
-	if !Access(r.user.id, filePathToDelete) {
-		return NewError("you don't have Access to this file")
-	}
-	_, err := os.ReadFile(filePathToDelete)
+	_, err := syscall.Open(filePathToDelete, syscall.SYS_READ, 0)
 	if err != nil {
-		return NewError("file does not exist")
+		return NewError("file does not exist to execute")
+	}
+	if !Access(r.user.id, Write, filePathToDelete) {
+		return NewError("you don't have Access to this file")
 	}
 	removeRecursively(r.user.id, filePathToDelete)
 
@@ -281,10 +293,41 @@ func (r *RBACTerminal) HandleRemoveFileCMD(arg string) Printable {
 	}
 	return NewPrintable("file successfully removed")
 }
+func (r *RBACTerminal) HandleExecCMD(arg string) Printable {
+
+	filePathToExec := filepath.Join(r.currentPath, arg)
+	_, err := syscall.Open(filePathToExec, syscall.SYS_READ, 0)
+	if err != nil {
+		return NewError("file does not exist to execute")
+	}
+	if !Access(r.user.id, Execute, filePathToExec) {
+		return NewError("you don't have Access to execute this file")
+	}
+
+	//_, err := os.ReadFile(filePathToExec)
+	//if err != nil {
+	//	return NewError("file does not exist to execute")
+	//}
+	out, err := exec.Command(filePathToExec).Output()
+	if err != nil {
+		return NewError(err.Error())
+	}
+	return NewPrintable(string(out))
+}
+func (r *RBACTerminal) HandleExitCMD() Printable {
+	TPrint(NewPrintable("exited."))
+	zap.L().Info("user exited", zap.Any("user", *r.user))
+	InitialChecks(r)
+
+	return NewPrintable("")
+}
+func (r *RBACTerminal) HandleWhoAmICMD() Printable {
+	return NewPrintable(r.user.username)
+}
 func (r *RBACTerminal) HandleRemoveDirCMD(arg string) Printable {
 	filePathToDelete := filepath.Join(r.currentPath, arg)
 
-	if !Access(r.user.id, filePathToDelete) {
+	if !Access(r.user.id, Write, filePathToDelete) {
 		return NewError("you don't have Access to this folder")
 	}
 	_, err := os.ReadDir(filePathToDelete)
@@ -302,4 +345,15 @@ func (r *RBACTerminal) HandleRemoveDirCMD(arg string) Printable {
 }
 func (r *RBACTerminal) getTerminal() Terminal {
 	return r
+}
+func AclToInt(s string) int {
+	switch s {
+	case "read":
+		return Read
+	case "write":
+		return Write
+	case "execute":
+		return Execute
+	}
+	return 100
 }

@@ -11,10 +11,15 @@ type Command struct {
 }
 
 const (
-	ListCMD = "list"
-	OpenCMD = "open"
-	BackCMD = "back"
-	ReadCMD = "read"
+	ListCMD   = "list"
+	OpenCMD   = "open"
+	BackCMD   = "back"
+	ReadCMD   = "read"
+	ExitCMD   = "exit"
+	WhoAmICmd = "whoami"
+
+	ExecCMD         = "exec"
+	ExecUsageString = "wrong COMMAND. usage: " + ExecCMD + " <file name>"
 
 	CreateFileCMD         = "create-file"
 	CreateFileUsageString = "wrong COMMAND. usage: " + CreateFileCMD + " <new file name>"
@@ -22,10 +27,10 @@ const (
 	CreateDirCMD         = "create-folder"
 	CreateDirUsageString = "wrong COMMAND. usage: " + CreateDirCMD + " <new folder name>"
 
-	RemoveFileCMD         = "remove-file" //todo
+	RemoveFileCMD         = "remove-file"
 	RemoveFileUsageString = "wrong COMMAND. usage: " + RemoveFileCMD + " <file name>"
 
-	RemoveDirCMD         = "remove-folder" //todo
+	RemoveDirCMD         = "remove-folder"
 	RemoveDirUsageString = "wrong COMMAND. usage: " + RemoveDirCMD + " <folder name>"
 
 	HelpCMD = "help"
@@ -49,7 +54,7 @@ const (
 	RemoveRoleUsageString = "wrong COMMAND. usage: " + RemoveRoleCMD + " <role name>"
 
 	AddRoleForFileCMD            = "add-file-role"
-	AddRoleForFileCMDUsageString = "wrong COMMAND. usage: " + AddRoleForFileCMD + " <file name> <role-name>"
+	AddRoleForFileCMDUsageString = "wrong COMMAND. usage: " + AddRoleForFileCMD + " <file name> <role-name> <access>"
 
 	RemoveRoleForFileCMD            = "remove-file-role"
 	RemoveRoleForFileCMDUsageString = "wrong COMMAND. usage: " + RemoveRoleForFileCMD + " <file name> <role-name>"
@@ -68,7 +73,7 @@ const (
 	colorWhite  = "\033[37m"
 )
 
-var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, CreateDirCMD, CreateFileCMD, RemoveDirCMD, RemoveFileCMD, HelpCMD}
+var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, CreateDirCMD, CreateFileCMD, RemoveDirCMD, RemoveFileCMD, ExecCMD, ExitCMD, WhoAmICmd, HelpCMD}
 
 func (c *Command) Validate() bool {
 	return utils.Contain(validCommands, c.c)

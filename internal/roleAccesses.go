@@ -20,8 +20,8 @@ func GetRoleAccess(filePath string) *roleAccess {
 	return &roleAccess{roleID: roleID, filePath: filePath}
 }
 
-func NewRoleAccess(roleID int, filePath string) error {
-	d, err := conn.ExecContext(context.Background(), "insert into roleAccesses (roleID,filePath) values (?,?)", roleID, filePath)
+func NewRoleAccess(roleID, level int, filePath string) error {
+	d, err := conn.ExecContext(context.Background(), "insert into roleAccesses (roleID,filePath,access) values (?,?,?)", roleID, filePath, level)
 	if err != nil {
 		return err
 	}
@@ -38,25 +38,25 @@ func RemoveRoleAccess(roleID int, filePath string) error {
 	}
 	return nil
 }
-func access(userID int, path string) bool {
-	var count int
-	err := conn.QueryRowContext(context.Background(), "select count(*) from roleAccesses inner join userRoles on (roleAccesses.roleID=userRoles.roleID) where userID=? AND filePath=?",
-		userID, path).Scan(&count)
+func access(userID, level int, path string) bool {
+	var acl int
+	err := conn.QueryRowContext(context.Background(), "select access from roleAccesses inner join userRoles on (roleAccesses.roleID=userRoles.roleID) where userID=? AND filePath=?",
+		userID, path).Scan(&acl)
 	if err != nil {
 		return false
 	}
-	return count >= 1
+	return acl >= level
 }
-func Access(userID int, path string) bool {
+func Access(userID, level int, path string) bool {
 	if UserAccess(userID, path) {
 		return true
 	}
-	if access(userID, path) {
+	if access(userID, level, path) {
 		return true
 	} else { //recursive check
 		currentPath := path
 		for currentPath != "" {
-			if access(userID, currentPath) {
+			if access(userID, level, currentPath) {
 				return true
 			}
 			paths := strings.Split(currentPath, "/")

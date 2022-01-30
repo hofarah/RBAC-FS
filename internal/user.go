@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hofarah/RBAC-FS/tools/sqlite"
+	"strings"
 )
 
 var conn *sql.Conn
@@ -42,6 +43,16 @@ func GetUser(username, password string) *user {
 	hash := fmt.Sprintf("%x", md5.Sum([]byte(password)))
 	var id int
 	err := conn.QueryRowContext(context.Background(), "select id from users where username=? AND password=?", username, hash).Scan(&id)
+	if err != nil {
+		return nil
+	}
+	return &user{username: username, id: id}
+}
+
+func GetUserWithPublicKey(username, publicKey string) *user {
+	publicKey = strings.TrimSpace(publicKey)
+	var id int
+	err := conn.QueryRowContext(context.Background(), "select id from users where username=? AND public_key=?", username, publicKey).Scan(&id)
 	if err != nil {
 		return nil
 	}
