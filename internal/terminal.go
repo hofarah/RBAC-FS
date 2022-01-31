@@ -26,6 +26,9 @@ type Terminal interface {
 	HandleRemoveRoleCMD(args ...string) Printable
 	HandleAddRoleForFileCMD(args ...string) Printable
 	HandleRemoveRoleForFileCMD(args ...string) Printable
+	HandleRemoveLabelCMD(args ...string) Printable
+	HandleAddLabelForFileCMD(args ...string) Printable
+	HandleAddLabelForUserCMD(args ...string) Printable
 	HandleAddRoleForUserCMD(args ...string) Printable
 	HandleRemoveRoleForUserCMD(args ...string) Printable
 	getName() string
@@ -120,12 +123,34 @@ func HandleCmd(terminal Terminal, cmd Command) {
 		}
 		TPrint(terminal.HandleRemoveRoleForFileCMD(cmd.args...))
 		return
+
+	case RemoveLabelCMD:
+		if len(cmd.args) == 0 {
+			TPrint(NewHelp(RemoveLabelUsageString))
+			return
+		}
+		TPrint(terminal.HandleRemoveLabelCMD(cmd.args...))
+		return
+	case AddLabelForFileCMD:
+		if len(cmd.args) <= 2 {
+			TPrint(NewHelp(AddLabelForFileCMDUsageString))
+			return
+		}
+		TPrint(terminal.HandleAddLabelForFileCMD(cmd.args...))
+		return
 	case AddUserRoleCMD:
 		if len(cmd.args) <= 1 {
 			TPrint(NewHelp(AddUserRoleUsageString))
 			return
 		}
 		TPrint(terminal.HandleAddRoleForUserCMD(cmd.args...))
+		return
+	case AddLabelForUserCMD:
+		if len(cmd.args) <= 1 {
+			TPrint(NewHelp(AddLabelForUserCMDUsageString))
+			return
+		}
+		TPrint(terminal.HandleAddLabelForUserCMD(cmd.args...))
 		return
 	case RemoveUserRoleCMD:
 		if len(cmd.args) <= 1 {

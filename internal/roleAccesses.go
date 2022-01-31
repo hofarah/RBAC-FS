@@ -45,7 +45,7 @@ func access(userID, level int, path string) bool {
 	if err != nil {
 		return false
 	}
-	return acl >= level
+	return acl == level
 }
 func Access(userID, level int, path string) bool {
 	if UserAccess(userID, path) {

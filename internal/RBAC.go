@@ -357,3 +357,14 @@ func AclToInt(s string) int {
 	}
 	return 100
 }
+
+func (r *RBACTerminal) HandleRemoveLabelCMD(args ...string) Printable {
+	return NewPrintable("invalid command")
+}
+func (r *RBACTerminal) HandleAddLabelForFileCMD(args ...string) Printable {
+	return NewPrintable("invalid command")
+}
+
+func (r *RBACTerminal) HandleAddLabelForUserCMD(args ...string) Printable {
+	return NewPrintable("invalid command")
+}

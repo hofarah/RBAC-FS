@@ -25,13 +25,13 @@ const (
 	CreateFileUsageString = "wrong COMMAND. usage: " + CreateFileCMD + " <new file name>"
 
 	CreateDirCMD         = "create-folder"
-	CreateDirUsageString = "wrong COMMAND. usage: " + CreateDirCMD + " <new folder name>"
+	CreateDirUsageString = "wrong COMMAND. usage: " + CreateDirCMD + " <new directory name>"
 
 	RemoveFileCMD         = "remove-file"
 	RemoveFileUsageString = "wrong COMMAND. usage: " + RemoveFileCMD + " <file name>"
 
 	RemoveDirCMD         = "remove-folder"
-	RemoveDirUsageString = "wrong COMMAND. usage: " + RemoveDirCMD + " <folder name>"
+	RemoveDirUsageString = "wrong COMMAND. usage: " + RemoveDirCMD + " <directory name>"
 
 	HelpCMD = "help"
 
@@ -59,10 +59,32 @@ const (
 	RemoveRoleForFileCMD            = "remove-file-role"
 	RemoveRoleForFileCMDUsageString = "wrong COMMAND. usage: " + RemoveRoleForFileCMD + " <file name> <role-name>"
 
+	AddLabelForFileCMD            = "add-file-label"
+	AddLabelForFileCMDUsageString = "wrong COMMAND. usage: " + AddLabelForFileCMD + " <file name> <label-name> <access>"
+
+	AddLabelForUserCMD            = "add-user-label"
+	AddLabelForUserCMDUsageString = "wrong COMMAND. usage: " + AddLabelForUserCMD + " <label name> <user-name>"
+
+	//RemoveLabelForUserCMD            = "remove-user-label"
+	//RemoveLabelForUserCMDUsageString = "wrong COMMAND. usage: " + RemoveLabelForUserCMD + " <label name> <user-name>"
+
+	RemoveLabelCMD         = "remove-label"
+	RemoveLabelUsageString = "wrong COMMAND. usage: " + RemoveLabelCMD + " <label name>"
+
 	OpenUsageString = "wrong COMMAND. usage: " + OpenCMD + " <folder name>"
 	ReadUsageString = "wrong COMMAND. usage: " + ReadCMD + " <file name>"
-	HelpString      = "COMMANDS\n" + ListCMD + " - list of current directory\n" + BackCMD + " - go to parent directory\n" + OpenCMD + " - open folder\n" + ReadCMD + " - open file"
-	colorReset      = "\033[0m"
+	HelpString      = "COMMANDS\n" + ListCMD + " - list of current directory\n" +
+		BackCMD + " - go to parent directory\n" + OpenCMD + " - open folder\n" +
+		ReadCMD + " - open file\n" +
+		ExecCMD + " - execute a file\n" +
+		WhoAmICmd + " - what is my username\n" +
+		ExitCMD + " - exit user\n" +
+		CreateDirCMD + " - create new directory\n" +
+		CreateFileCMD + " - create new file\n" +
+		RemoveDirCMD + " - remove directory\n" +
+		RemoveFileCMD + " - remove file"
+
+	colorReset = "\033[0m"
 
 	colorRed    = "\033[31m"
 	colorGreen  = "\033[32m"
@@ -73,7 +95,7 @@ const (
 	colorWhite  = "\033[37m"
 )
 
-var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, CreateDirCMD, CreateFileCMD, RemoveDirCMD, RemoveFileCMD, ExecCMD, ExitCMD, WhoAmICmd, HelpCMD}
+var validCommands = []string{ListCMD, OpenCMD, BackCMD, ReadCMD, AddUserCMD, RemoveUserCMD, AddRoleCMD, RemoveRoleCMD, AddUserRoleCMD, RemoveUserRoleCMD, AddRoleForFileCMD, RemoveRoleForFileCMD, CreateDirCMD, CreateFileCMD, RemoveDirCMD, RemoveFileCMD, ExecCMD, ExitCMD, WhoAmICmd, AddLabelForFileCMD, RemoveLabelCMD, AddLabelForUserCMD, HelpCMD}
 
 func (c *Command) Validate() bool {
 	return utils.Contain(validCommands, c.c)

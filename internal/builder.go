@@ -17,7 +17,7 @@ func GetBuilder(builderType string) TBuilder {
 		return &RBACTerminal{}
 	}
 	if builderType == "MAC" {
-		//todo
+		return &MACTerminal{}
 	}
 	return nil
 }

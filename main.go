@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	internal.Listen(internal.BuildTerminal(internal.GetBuilder("RBAC")))
+	internal.Listen(internal.BuildTerminal(internal.GetBuilder("MAC")))
 }
