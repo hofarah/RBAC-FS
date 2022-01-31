@@ -211,7 +211,7 @@ func (r *RBACTerminal) HandleAddRoleForFileCMD(args ...string) Printable {
 	if rr == nil {
 		return NewError("role not found")
 	}
-	err := NewRoleAccess(rr.id, AclToInt(args[2]), filePath)
+	err := NewRoleAccess(rr.id, args[2], filePath)
 	if err != nil {
 		return NewPrintable("an error accrued", OPrint{color: colorRed})
 	}

@@ -9,12 +9,12 @@ type label struct {
 	id     int
 	name   string
 	access string
-	level  int
+	level  string
 }
 
 func GetLabel(r string) *label {
-	var id, level int
-	var filePath string
+	var id int
+	var filePath, level string
 	err := conn.QueryRowContext(context.Background(), "select id,access,`level` from labels where name=?", r).Scan(&id, &filePath, &level)
 	if err != nil {
 		return nil
@@ -22,7 +22,7 @@ func GetLabel(r string) *label {
 	return &label{id: id, name: r, access: filePath, level: level}
 }
 
-func NewLabel(label, filePath string, level, userID int) error {
+func NewLabel(label, filePath, level string, userID int) error {
 	_, err := conn.ExecContext(context.Background(), "insert into labels (`name`,access,`level`) values (?,?,?)", label, filePath, level)
 	if err != nil {
 		return err

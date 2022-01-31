@@ -20,7 +20,7 @@ func GetRoleAccess(filePath string) *roleAccess {
 	return &roleAccess{roleID: roleID, filePath: filePath}
 }
 
-func NewRoleAccess(roleID, level int, filePath string) error {
+func NewRoleAccess(roleID int, level, filePath string) error {
 	d, err := conn.ExecContext(context.Background(), "insert into roleAccesses (roleID,filePath,access) values (?,?,?)", roleID, filePath, level)
 	if err != nil {
 		return err
@@ -39,13 +39,13 @@ func RemoveRoleAccess(roleID int, filePath string) error {
 	return nil
 }
 func access(userID, level int, path string) bool {
-	var acl int
+	var acl string
 	err := conn.QueryRowContext(context.Background(), "select access from roleAccesses inner join userRoles on (roleAccesses.roleID=userRoles.roleID) where userID=? AND filePath=?",
 		userID, path).Scan(&acl)
 	if err != nil {
 		return false
 	}
-	return acl == level
+	return levelToAccess(acl, level)
 }
 func Access(userID, level int, path string) bool {
 	if UserAccess(userID, path) {
@@ -66,6 +66,17 @@ func Access(userID, level int, path string) bool {
 			currentPath = strings.Join(paths[:len(paths)-1], "/")
 		}
 
+	}
+	return false
+}
+func levelToAccess(aclString string, level int) bool {
+	switch level {
+	case Read:
+		return strings.ContainsAny(aclString, "r")
+	case Write:
+		return strings.ContainsAny(aclString, "w")
+	case Execute:
+		return strings.ContainsAny(aclString, "x")
 	}
 	return false
 }

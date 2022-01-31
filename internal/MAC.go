@@ -261,7 +261,7 @@ func (r *MACTerminal) HandleAddLabelForFileCMD(args ...string) Printable {
 		return NewError("file does not exist")
 	}
 
-	err = NewLabel(args[1], filePath, AclToInt(args[2]), r.user.id)
+	err = NewLabel(args[1], filePath, args[2], r.user.id)
 	if err != nil {
 		return NewPrintable("an error accrued", OPrint{color: colorRed})
 	}
@@ -296,11 +296,11 @@ func MACAccess(userID, level int, path string) bool {
 	return false
 }
 func macAccess(userID, level int, path string) bool {
-	var acl int
+	var acl string
 	err := conn.QueryRowContext(context.Background(), "select `level` from labels inner join labelUsers on (labelID=id) where userID=? AND access=?",
 		userID, path).Scan(&acl)
 	if err != nil {
 		return false
 	}
-	return acl == level
+	return levelToAccess(acl, level)
 }
